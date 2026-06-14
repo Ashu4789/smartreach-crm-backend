@@ -58,8 +58,12 @@ const getAnalyticsSummary = async (req, res, next) => {
       };
     }
 
-    // 2. Fetch total customer count
+    // 2. Fetch total customer count and total D2C revenue
     const totalCustomers = await Customer.countDocuments();
+    const revenueResult = await Customer.aggregate([
+      { $group: { _id: null, totalRevenue: { $sum: '$totalSpend' } } }
+    ]);
+    const totalRevenue = revenueResult.length > 0 ? parseFloat(revenueResult[0].totalRevenue.toFixed(2)) : 0;
 
     // 3. Fetch recent campaigns (last 10) to display status and micro-charts
     const recentCampaigns = await Campaign.find()
@@ -70,6 +74,7 @@ const getAnalyticsSummary = async (req, res, next) => {
       success: true,
       data: {
         totalCustomers,
+        totalRevenue,
         metrics,
         recentCampaigns
       }

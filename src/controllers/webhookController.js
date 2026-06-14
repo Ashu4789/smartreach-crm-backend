@@ -78,6 +78,25 @@ const handleWebhookCallback = async (req, res, next) => {
   }
 };
 
-module.exports = {
-  handleWebhookCallback
+const getRecentWebhookLogs = async (req, res, next) => {
+  try {
+    const logs = await Communication.find()
+      .sort({ updatedAt: -1 })
+      .limit(30)
+      .populate('customerId', 'name email phone preferredChannel')
+      .populate('campaignId', 'name channel');
+
+    res.status(200).json({
+      success: true,
+      data: logs
+    });
+  } catch (error) {
+    next(error);
+  }
 };
+
+module.exports = {
+  handleWebhookCallback,
+  getRecentWebhookLogs
+};
+

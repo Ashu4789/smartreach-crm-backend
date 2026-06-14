@@ -63,7 +63,7 @@ const uploadCSV = async (req, res, next) => {
               preferredChannel: preferredChannel ? preferredChannel.trim() : 'Email',
               $addToSet: { tags: { $each: parsedTags } } // merges tags
             },
-            { upsert: true, new: true, runValidators: true }
+            { upsert: true, returnDocument: 'after', runValidators: true }
           );
 
           successCount++;
